@@ -6,7 +6,7 @@ import json
 import os
 import re
 
-# Argparse Stuff
+# Argparse Stuff.
 par = argparse.ArgumentParser(description="Vidya Scraper.")
 par.add_argument('post', nargs='*', default=False, type=str, help='Post to download info from.')
 pargs = par.parse_args()
@@ -21,7 +21,7 @@ s = shutil
 # url = 'https://vidyart.booru.org/index.php?page=post&s=view&id=377861'
 # url1 = 'https://vidyart.booru.org/index.php?page=post&s=view&id=376759'
 
-# Json Output File
+# Json Output File.
 ydf = './data.json'
 
 # Check for post variable:
@@ -52,7 +52,7 @@ url = str('https://vidyart.booru.org/index.php?page=post&s=view&id=' + thing)
 # Grab pages RAW output:
 t = r.get(url)
 
-# Test if page is 200 else skip
+# Test if page is 200 else skip.
 if str(200) in str(t):
     print(True)
     pass
@@ -61,25 +61,30 @@ else:
     exit()
 
 # Parse out wanted information:
+# Tags.
 tags = re.findall('((?<=post&amp;s=list&amp;tags=)\S*)+"', t.text)
 n = (len(tags) - 1)
 del(tags[n])
 del(tags[0])
+# Direct image link.
 img = re.findall('((?<=id="note-container"><img alt="img" src=")\S*)+"', t.text)
 img = img[0]
+# Image ID.
 id = re.findall('(?<=Id: )(\S*)', t.text)
 id = id[0]
+# Date/Time Posted.
 posted = re.findall('(?<=Posted: )(\S*)(.+)(\S*)<+', t.text)
 date = posted[0][0]
 time = posted[0][1].strip()
 
-# Build Printable output for user:
+# Build Printable CLI output for user:
 ptable = ('ID: ' + str(id),
           'Date: ' + str(date),
           'Time: ' + str(time),
           'Image: ' + str(img),
           'Tags: ' + str(tags)
           )
+# Loop through above output.
 for d in ptable:
     print(str(d))
 
@@ -90,12 +95,14 @@ download_file(img, id)
 yd = {'ID': {id: {'date': date, 'time': time, 'image': img, 'tags': tags}}}
 
 # Write out to JSON File.
+# If json file exist:
 if os.path.exists(ydf) is True:
     with open(ydf, 'r+') as f:
         data = j.load(f)
         data['ID'].update(yd['ID'])
         with open(ydf, 'w') as o:
             j.dump(data, o, indent=2, sort_keys=True)
+# If json file does not exist.
 else:
     with open(ydf, 'w') as f:
         j.dump(yd, f, indent=2, sort_keys=True)
