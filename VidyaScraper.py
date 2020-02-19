@@ -1,10 +1,15 @@
 #!/usr/bin/python3
-import requests
-import argparse
-import shutil
-import json
-import os
-import re
+try:
+    import requests
+    import argparse
+    import shutil
+    import json
+    import os
+    import re
+except ImportError as e:
+    print('Missing needed Module\nError:\n' + str(e))
+    print('\nPlease install any missing modules.\nExiting')
+    exit()
 
 # Argparse Stuff.
 par = argparse.ArgumentParser(description="Vidya Scraper.")
