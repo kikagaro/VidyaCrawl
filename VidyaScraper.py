@@ -37,11 +37,10 @@ if not thing:
 
 
 # Image Download Function:
-def download_file(url, din):
-    local_filename = url.split('/')[-1]
-    ftype = re.findall('(?<=\.)\S*', local_filename)
-    local_filename = str(din) + '.' + str(ftype[0])
-    with requests.get(url, stream=True) as r:
+def download_file(iurl, din):
+    ftype = iurl.split('.')[-1]
+    local_filename = str(din) + '.' + str(ftype)
+    with requests.get(iurl, stream=True) as r:
         with open(local_filename, 'wb') as f:
             s.copyfileobj(r.raw, f)
     return local_filename
