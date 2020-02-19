@@ -24,6 +24,7 @@ url1 = 'https://vidyart.booru.org/index.php?page=post&s=view&id=376759'
 # Json Output
 ydf = './data.json'
 
+
 # Image Download Function:
 def download_file(url, din):
     local_filename = url.split('/')[-1]
@@ -70,7 +71,7 @@ yd = {'ID': {id: {'date': date, 'time': time, 'image': img, 'tags': tags}}}
 
 
 # Write out to JSON File
-if os.path.exists('./data.json') is True:
+if os.path.exists(ydf) is True:
     with open(ydf, 'r+') as f:
         data = json.load(f)
         data['ID'].update(yd['ID'])
@@ -78,4 +79,4 @@ if os.path.exists('./data.json') is True:
             json.dump(data, o, indent=2, sort_keys=True)
 else:
     with open(ydf, 'w') as f:
-        json.dumps(yd, f, indent=2, sort_keys=True)
+        json.dump(yd, f, indent=2, sort_keys=True)
