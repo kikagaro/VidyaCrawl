@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import requests
 import argparse
 import shutil
@@ -8,7 +7,7 @@ import os
 import re
 
 # Argparse Stuff
-par = argparse.ArgumentParse(description="Vidya Scraper.")
+par = argparse.ArgumentParser(description="Vidya Scraper.")
 par.add_argument('post', nargs='*', default=False, type=str, help='Post to download info from.')
 pargs = par.parse_args()
 
@@ -35,6 +34,7 @@ except TypeError or NameError:
 if not thing:
     print('Please provide a post ID')
     thing = input()
+
 
 # Image Download Function:
 def download_file(url, din):
