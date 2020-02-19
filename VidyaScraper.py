@@ -57,7 +57,7 @@ url = str('https://vidyart.booru.org/index.php?page=post&s=view&id=' + thing)
 # Grab pages RAW output:
 t = r.get(url)
 
-# Test if page is 200 else skip.
+# Test if page is 200 else skip/end.
 if str(200) in str(t):
     print(True)
     pass
@@ -81,12 +81,28 @@ id = id[0]
 posted = re.findall('(?<=Posted: )(\S*)(.+)(\S*)<+', t.text)
 date = posted[0][0]
 time = posted[0][1].strip()
+# Uploader.
+by = re.findall('(?<=By: )(\S*)', t.text)
+by = by[0]
+# Image size.
+ims = re.findall('(?<=Size: )(\S*)', t.text)
+ims = ims[0]
+# Image Rating.
+irate = re.findall('(?<=Rating: )(\S*)', t.text)
+irate = irate[0]
+# Score.
+scor = re.findall('(?<=Score: )(\S*)', t.text)
+scor = scor[0]
 
 # Build Printable CLI output for user:
 ptable = ('ID: ' + str(id),
+          'Uploader: ' + str(by),
           'Date: ' + str(date),
           'Time: ' + str(time),
           'Image: ' + str(img),
+          'Size: ' + str(ims),
+          'Rating: ' + str(irate),
+          'Score: ' + str(scor),
           'Tags: ' + str(tags)
           )
 # Loop through above output.
@@ -97,7 +113,8 @@ for d in ptable:
 download_file(img, id)
 
 # Build Json to output to file.
-yd = {'ID': {id: {'date': date, 'time': time, 'image': img, 'tags': tags}}}
+yd = {'ID': {id: {'uploader': by, 'date': date, 'time': time, 'image': img, 'size': ims, 'rating': irate,
+                  'score': scor, 'tags': tags}}}
 
 # Write out to JSON File.
 # If json file exist:

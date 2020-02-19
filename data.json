@@ -428,6 +428,9 @@
     "376759": {
       "date": "2019-12-30",
       "image": "https://img.booru.org/vidyart//images/74/0ae09a9895868e6737689b957fa565b5cce9df98.png",
+      "rating": "Safe",
+      "score": "0",
+      "size": "1250x1250",
       "tags": [
         "1girl",
         "artist:kikagaro",
@@ -442,7 +445,8 @@
         "sharp_teeth",
         "taokaka"
       ],
-      "time": "16:09:27"
+      "time": "16:09:27",
+      "uploader": "Paper"
     },
     "376760": {
       "date": "2019-12-30",
