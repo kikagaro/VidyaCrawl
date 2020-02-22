@@ -11,13 +11,13 @@ except ImportError as e:
     print('\nPlease install any missing modules.\nExiting')
     exit()
 
-# Argparse Stuff.
+# ArgParse Stuff.
 par = argparse.ArgumentParser(description="Vidya Scraper.")
 par.add_argument('post', nargs='*', default=False, type=str, help='Post to download info from.')
 pargs = par.parse_args()
 
 
-# import variable shortners:
+# import variable abbreviation:
 r = requests
 j = json
 s = shutil
@@ -26,7 +26,7 @@ s = shutil
 # url = 'https://vidyart.booru.org/index.php?page=post&s=view&id=377861'
 # url1 = 'https://vidyart.booru.org/index.php?page=post&s=view&id=376759'
 
-# Check for post variable:
+# Check for post variable form ArgParse:
 thing = ''
 try:
     thing = pargs.post[0]
@@ -66,7 +66,7 @@ def folder_check(cfolder):
         pass
 
 
-# Record Deleted Post function:
+# Record Deleted Post Function:
 def deleted_post(poid, burl):
     pjson = {'ID': {poid: {'url': burl}}}
     djson = os.getcwd() + '/deleted.json'
@@ -81,7 +81,7 @@ def deleted_post(poid, burl):
                 j.dump(data, o, indent=2, sort_keys=True)
 
 
-# Child post check function:
+# Child Post Check Function:
 def child_check(rawt):
     childc = re.findall('((?<=This post has <a href=")\S*)+"', rawt)
     if len(childc) >= 1:
@@ -94,13 +94,13 @@ def child_check(rawt):
 # Building Post URL:
 url = str('https://vidyart.booru.org/index.php?page=post&s=view&id=' + thing)
 
-# Grab pages RAW output:
+# Grab post page's RAW output:
 t = r.get(url)
 
 # Grab page title:
 title = re.findall('<title>/v/idyart</title>', t.text)
 
-# Test if page redirects to posts page.
+# Test if page redirects to home posts page.
 if len(title) >= 1:
     print('Post link is bad.\nRecording Post ID\n')
     deleted_post(thing, url)
@@ -109,10 +109,10 @@ else:
     print('Post link is good.\n')
     pass
 
-# Child post check:
+# Check if page is a child post:
 child = child_check(t.text)
 
-# Parse out wanted information:
+# Parse out wanted variables:
 # Tags.
 tags = re.findall('((?<=post&amp;s=list&amp;tags=)\S*)+"', t.text)
 n = (len(tags) - 1)
@@ -161,7 +161,6 @@ yp = wd + '/' + yd
 mp = yp + '/' + md
 ydf = mp + '/data.json'
 
-
 # Check / Creating download path for images:
 try:
     folder_check(wd)
@@ -206,6 +205,6 @@ ptable = ('ID: ' + str(id),
           'Score: ' + str(scor),
           'Tags: ' + str(tags)
           )
-# Loop through above output.
+# Loop through above for CLI output.
 for d in ptable:
     print(str(d))
