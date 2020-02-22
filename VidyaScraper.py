@@ -26,9 +26,6 @@ s = shutil
 # url = 'https://vidyart.booru.org/index.php?page=post&s=view&id=377861'
 # url1 = 'https://vidyart.booru.org/index.php?page=post&s=view&id=376759'
 
-# Json Output File.
-ydf = './data.json'
-
 # Check for post variable:
 thing = ''
 try:
@@ -42,13 +39,31 @@ if not thing:
 
 
 # Image Download Function:
-def download_file(iurl, din):
+def download_file(iurl, din, ipath):
     ftype = iurl.split('.')[-1]
     local_filename = str(din) + '.' + str(ftype)
-    with requests.get(iurl, stream=True) as r:
-        with open(local_filename, 'wb') as f:
-            s.copyfileobj(r.raw, f)
-    return local_filename
+    image_path = ipath + '/' + local_filename
+    if os.path.isfile(image_path) is False:
+        with requests.get(iurl, stream=True) as r:
+            with open(image_path, 'wb') as f:
+                s.copyfileobj(r.raw, f)
+        return local_filename
+    else:
+        print("The image exist:\n%s\n" % image_path)
+        pass
+
+
+# Folder Check Function:
+def folder_check(cfolder):
+    if os.path.isdir(cfolder) is False:
+        try:
+            os.mkdir(cfolder)
+        except OSError:
+            print("Creation of the directory %s filed." % cfolder)
+        else:
+            print("Successfully created the directory %s." % cfolder)
+    else:
+        pass
 
 
 # Building Post URL:
@@ -57,13 +72,16 @@ url = str('https://vidyart.booru.org/index.php?page=post&s=view&id=' + thing)
 # Grab pages RAW output:
 t = r.get(url)
 
+# Grab page title:
+title = re.findall('<title>/v/idyart</title>', t.text)
+
 # Test if page is 200 else skip/end.
-if str(200) in str(t):
-    print(True)
-    pass
-else:
-    print(False)
+if len(title) >= 1:
+    print('Post link is bad.\n')
     exit()
+else:
+    print('Post link is good.\n')
+    pass
 
 # Parse out wanted information:
 # Tags.
@@ -93,6 +111,46 @@ irate = irate[0]
 # Score.
 scor = re.findall('(?<=Score: )(\S*)', t.text)
 scor = scor[0]
+# Source:
+sour = re.findall('(?<=Source: )(\S*)', t.text)
+
+# Path Variables for assets
+wd = os.getcwd() + '/assets'
+yd = date.split('-')[0]
+md = date.split('-')[1]
+yp = wd + '/' + yd
+mp = yp + '/' + md
+ydf = mp + '/data.json'
+
+
+# Check / Creating download path for images:
+try:
+    folder_check(wd)
+    folder_check(yp)
+    folder_check(mp)
+except:
+    print('Folder Check errors.')
+    exit()
+
+# Download image call and provide Rename ID:
+download_file(img, id, mp)
+
+# Build Json to output to file.
+yd = {'ID': {id: {'uploader': by, 'date': date, 'time': time, 'image': img, 'size': ims, 'rating': irate,
+                  'score': scor, 'source': sour, 'tags': tags}}}
+
+# Write out to JSON File.
+# If json file exist:
+if os.path.exists(ydf) is True:
+    with open(ydf, 'r+') as f:
+        data = j.load(f)
+        data['ID'].update(yd['ID'])
+        with open(ydf, 'w') as o:
+            j.dump(data, o, indent=2, sort_keys=True)
+# If json file does not exist.
+else:
+    with open(ydf, 'w') as f:
+        j.dump(yd, f, indent=2, sort_keys=True)
 
 # Build Printable CLI output for user:
 ptable = ('ID: ' + str(id),
@@ -108,23 +166,3 @@ ptable = ('ID: ' + str(id),
 # Loop through above output.
 for d in ptable:
     print(str(d))
-
-# Download image call and provide Rename ID:
-download_file(img, id)
-
-# Build Json to output to file.
-yd = {'ID': {id: {'uploader': by, 'date': date, 'time': time, 'image': img, 'size': ims, 'rating': irate,
-                  'score': scor, 'tags': tags}}}
-
-# Write out to JSON File.
-# If json file exist:
-if os.path.exists(ydf) is True:
-    with open(ydf, 'r+') as f:
-        data = j.load(f)
-        data['ID'].update(yd['ID'])
-        with open(ydf, 'w') as o:
-            j.dump(data, o, indent=2, sort_keys=True)
-# If json file does not exist.
-else:
-    with open(ydf, 'w') as f:
-        j.dump(yd, f, indent=2, sort_keys=True)
