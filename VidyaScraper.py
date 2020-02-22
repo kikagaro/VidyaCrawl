@@ -81,6 +81,16 @@ def deleted_post(poid, burl):
                 j.dump(data, o, indent=2, sort_keys=True)
 
 
+# Child post check function:
+def child_check(rawt):
+    childc = re.findall('((?<=This post has <a href=")\S*)+"', rawt)
+    if len(childc) >= 1:
+        chi = True
+    else:
+        chi = False
+    return chi
+
+
 # Building Post URL:
 url = str('https://vidyart.booru.org/index.php?page=post&s=view&id=' + thing)
 
@@ -98,6 +108,9 @@ if len(title) >= 1:
 else:
     print('Post link is good.\n')
     pass
+
+# Child post check:
+child = child_check(t.text)
 
 # Parse out wanted information:
 # Tags.
@@ -130,6 +143,16 @@ scor = scor[0]
 # Source:
 sour = re.findall('(?<=Source: )(\S*)', t.text)
 
+# Dynamic Variables
+# Related Post IDs from Child Post
+if child is True:
+    puri = re.findall('((?<=This post has <a href=")\S*)+"', t.text)
+    purl = str('https://vidyart.booru.org/' + puri[0])
+    ptxt = r.get(purl)
+    rid = re.findall('(?<=posts\[)[0-9]*', ptxt.text)
+    rid.remove(id)
+    print(rid)
+
 # Path Variables for assets
 wd = os.getcwd() + '/assets'
 yd = date.split('-')[0]
@@ -153,7 +176,11 @@ download_file(img, id, mp)
 
 # Build Json to output to file.
 yd = {'ID': {id: {'uploader': by, 'date': date, 'time': time, 'image': img, 'size': ims, 'rating': irate,
-                  'score': scor, 'source': sour, 'tags': tags}}}
+                  'score': scor, 'source': sour, 'tags': tags, 'child post': 'no'}}}
+# Additional Json if Child is true.
+if child is True:
+    cyd = {'ID': {id: {'related post': rid, 'child post': 'yes'}}}
+    yd['ID'][id].update(cyd['ID'][id])
 
 # Write out to JSON File.
 # If json file exist:
