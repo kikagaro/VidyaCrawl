@@ -66,6 +66,21 @@ def folder_check(cfolder):
         pass
 
 
+# Record Deleted Post function:
+def deleted_post(poid, burl):
+    pjson = {'ID': {poid: {'url': burl}}}
+    djson = os.getcwd() + '/deleted.json'
+    if os.path.isfile(djson) is False:
+        with open(djson, 'w') as f:
+            j.dump(pjson, f, indent=2, sort_keys=True)
+    else:
+        with open(djson, 'r+') as f:
+            data = j.load(f)
+            data['ID'].update(pjson['ID'])
+            with open(djson, 'w') as o:
+                j.dump(data, o, indent=2, sort_keys=True)
+
+
 # Building Post URL:
 url = str('https://vidyart.booru.org/index.php?page=post&s=view&id=' + thing)
 
@@ -75,9 +90,10 @@ t = r.get(url)
 # Grab page title:
 title = re.findall('<title>/v/idyart</title>', t.text)
 
-# Test if page is 200 else skip/end.
+# Test if page redirects to posts page.
 if len(title) >= 1:
-    print('Post link is bad.\n')
+    print('Post link is bad.\nRecording Post ID\n')
+    deleted_post(thing, url)
     exit()
 else:
     print('Post link is good.\n')
