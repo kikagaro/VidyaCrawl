@@ -3,9 +3,11 @@ try:
     import requests
     import argparse
     import shutil
+    import time
     import json
     import os
     import re
+    from config import *
 except ImportError as e:
     print('Missing needed Module\nError:\n' + str(e))
     print('\nPlease install any missing modules.\nExiting')
@@ -34,7 +36,7 @@ except TypeError or NameError:
     print('Post Argument not provided.\n')
     thing = ''
 if not thing:
-    print('Please provide a post ID')
+    print('Please provide a Image ID.')
     thing = input()
 
 
@@ -59,7 +61,7 @@ def folder_check(cfolder):
         try:
             os.mkdir(cfolder)
         except OSError:
-            print("Creation of the directory %s filed." % cfolder)
+            print("Creation of the directory %s failed." % cfolder)
         else:
             print("Successfully created the directory %s." % cfolder)
     else:
@@ -68,8 +70,13 @@ def folder_check(cfolder):
 
 # Record Deleted Post Function:
 def deleted_post(poid, burl):
+    wd = os.getcwd() + '/assets'
+    try:
+        folder_check(wd)
+    except:
+        print("Issue creating Assets folder for Deleted data.json.")
     pjson = {'ID': {poid: {'url': burl}}}
-    djson = os.getcwd() + '/deleted.json'
+    djson = wd + '/deleted.json'
     if os.path.isfile(djson) is False:
         with open(djson, 'w') as f:
             j.dump(pjson, f, indent=2, sort_keys=True)
@@ -96,6 +103,11 @@ url = str('https://vidyart.booru.org/index.php?page=post&s=view&id=' + thing)
 
 # Grab post page's RAW output:
 t = r.get(url)
+
+# Adding rate-limit to prevent over requesting
+if RateLimit > 0:
+    print('Sleeping for ' + str(RateLimit) + ' seconds for Rate-Limit.')
+    time.sleep(RateLimit)
 
 # Grab page title:
 title = re.findall('<title>/v/idyart</title>', t.text)
