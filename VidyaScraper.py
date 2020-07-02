@@ -3,11 +3,9 @@ try:
     import requests
     import argparse
     import shutil
-    import time
     import json
     import os
     import re
-    from config import *
 except ImportError as e:
     print('Missing needed Module\nError:\n' + str(e))
     print('\nPlease install any missing modules.\nExiting')
@@ -103,11 +101,6 @@ url = str('https://vidyart.booru.org/index.php?page=post&s=view&id=' + thing)
 
 # Grab post page's RAW output:
 t = r.get(url)
-
-# Adding rate-limit to prevent over requesting
-if RateLimit > 0:
-    print('Sleeping for ' + str(RateLimit) + ' seconds for Rate-Limit.')
-    time.sleep(RateLimit)
 
 # Grab page title:
 title = re.findall('<title>/v/idyart</title>', t.text)

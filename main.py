@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+from config import *
+import time
 import os
 
 print('Option Select File for Vidya Booru Scraper.')
@@ -15,8 +17,27 @@ thing = input()
 # Grab the directories working path:
 wd = os.path.dirname(__file__)
 
+
+def vidyascraper(ID):
+    os.system("py " + wd + "/VidyaScraper.py " + str(ID))
+
+
+# Adding rate-limit to prevent over requesting
+def ratelimit(rl):
+    if RateLimit > 0:
+        print('Sleeping for ' + str(rl) + ' seconds for Rate-Limit.')
+        time.sleep(rl)
+
+
 if int(thing) == 1:
     print('Please provide a Image # that you want to download.')
     postID = input()
-#    exec(open("VidyaScraper.py").read())
-    os.system("py " + wd + "/VidyaScraper.py " + postID)
+    vidyascraper(postID)
+elif int(thing) == 2:
+    print('Please provide the Image number you want to start at.')
+    firstPostId = int(input())
+    print('Please provide the Image number you want to end at.')
+    lastPostId = int(input()) + 1
+    for i in range(firstPostId, lastPostId):
+        vidyascraper(i)
+        ratelimit(RateLimit)

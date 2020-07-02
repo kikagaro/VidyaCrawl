@@ -1,5 +1,5 @@
-.idea/
-.git/
-assets/
-venv/
-deleted.json
+.idea
+.git
+assets
+venv
+__pycache__
