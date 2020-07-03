@@ -5,12 +5,12 @@ import time
 import os
 
 print('Option Select File for Vidya Booru Scraper.')
-
+print('')
 print('Please select one of the following options:')
 print('1. Download a specific image #.')
 print('2. Download a range of image #s.')
 print('3. Download starting from a specific image #.')
-print('4. Download starting from last known current image.')
+print('4. Download starting from last known downloaded image.')
 thing = input()
 
 # Grab the directories working path:
@@ -27,7 +27,7 @@ def vidyascraper(id):
 # Adding rate-limit to prevent over requesting
 def ratelimit(rl):
     if RateLimit > 0:
-        print('Sleeping for ' + str(rl) + ' seconds for Rate-Limit.')
+        print('Rate-Limit: ' + str(rl) + ' seconds.')
         time.sleep(rl)
 
 
@@ -46,9 +46,9 @@ if int(thing) == 1:
     vidyascraper(postID)
     lastdownload(last, str(postID))
 elif int(thing) == 2:
-    print('Please provide the Image number you want to start at.')
+    print('Please provide the Image number you want to start with.')
     firstPostId = int(input())
-    print('Please provide the Image number you want to end at.')
+    print('Please provide the Image number you want to end with.')
     lastPostId = int(input()) + 1
     for i in range(firstPostId, lastPostId):
         vidyascraper(i)
