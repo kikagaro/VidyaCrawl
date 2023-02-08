@@ -1,3 +1,5 @@
+# DEPREICATED, Site no longer exist.
+
 VidyaBooru ripper for site preservation.
 
 Standalone script
